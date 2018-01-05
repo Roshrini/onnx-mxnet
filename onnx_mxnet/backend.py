@@ -65,7 +65,6 @@ class MXNetBackend(Backend):
         # create a module
         mod = mx.mod.Module(symbol=sym, data_names=data_names, context=ctx, label_names=None)
         mod.bind(for_training=False, data_shapes=data_shapes, label_shapes=None)
-
         # initializing parameters for calculating result of each individual node
         mod.init_params()
 
@@ -75,7 +74,7 @@ class MXNetBackend(Backend):
         for val in inputs:
             # slice and pad operator tests needs 1 less dimension in forward pass
             # otherwise it will throw an error.
-            if node.op_type == 'Slice' or node.op_type == 'Pad':
+            if node.op_type == 'Slice' or node.op_type == 'Pad' or node.op_type == 'Concat':
                 data_forward.append(mx.nd.array(val))
             else:
                 data_forward.append(mx.nd.array([val]))

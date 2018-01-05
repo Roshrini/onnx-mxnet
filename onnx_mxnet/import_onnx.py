@@ -111,7 +111,9 @@ class GraphProto(object):
             node_name = node.name.strip()
             node_name = node_name if node_name else None
             attr = self._parse_attr(node.attribute)
+            print op_name, attr
             new_op, new_attr = _convert_operator(op_name, attr)
+            print new_op, new_attr
             inputs = [self._nodes[self._renames.get(i, i)] for i in node.input]
 
             # some workarounds for onnx problem
@@ -128,11 +130,17 @@ class GraphProto(object):
             if op_name == 'Gemm':
                 new_op, inputs, new_attr = self._fix_gemm('FullyConnected', inputs, attr)
 
+            if op_name == 'Constant':
+                print node.value
+
             # onnx slice works on multiple axes whereas mxnet's slice_axis is for single axis
             if op_name == 'Slice':
                 op = self._fix_slice(inputs, new_attr)
             else:
                 op = new_op(name=node_name, *inputs, **new_attr)
+            if op_name == 'Concat':
+                print op.infer_shape(input_0=(1,1,128,128))
+
             node_output = self._fix_outputs(op_name, node.output)
             assert len(node_output) == len(op.list_outputs()), (
                 "Number of output mismatch {} vs {} in {}.".format(

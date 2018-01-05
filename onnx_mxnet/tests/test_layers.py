@@ -194,5 +194,12 @@ class TestLayers(unittest.TestCase):
         numpy_op = exp_score / exp_score.sum(0)
         npt.assert_almost_equal(output, numpy_op)
 
+    def test_concat(self):
+        node_def = helper.make_node("Concat", ["ip1", "ip2"], ["op1"], axis=1)
+        ip1 = self._random_array([10,20,5])
+        ip2 = self._random_array([10,20,5])
+        output = mxnet_backend.run_node(node_def, [ip1, ip2])
+        np.testing.assert_almost_equal(output, np.concatenate((ip1, ip2), 1))
+
 if __name__ == '__main__':
     unittest.main()

@@ -87,7 +87,8 @@ def _conv_transpose():
             'kernel_shape': 'kernel',
             'strides': 'stride',
             'dilations': ('dilate', (0, 0)),
-            'pads': ('pad', (0, 0), _revert_caffe2_pad)},
+            'pads': ('pad', (0, 0), _revert_caffe2_pad),
+            'group': ('num_group', 1)},
         disables=['output_shape'],
         custom_check=_dimension_constraint())
 
@@ -136,7 +137,8 @@ def _global_pooling(name):
         op_name='Pooling',
         extras={'global_pool': True,
                 'kernel': (1,1),
-                'pool_type': name})
+                'pool_type': name,
+                'pooling_convention': 'full'})
 
 # compatible operators that do NOT require any conversion.
 _identity_list = []
